@@ -402,6 +402,7 @@ class DXLinkStreamer:
             "Trade": 15,
             "Underlying": 17,
         }
+        print("init dxlink streamer")
         self._subscription_state: dict[str, str] = defaultdict(lambda: "CHANNEL_CLOSED")
         #: An async function to be called upon reconnection. The first argument must be
         #: of type `DXLinkStreamer` and will be a reference to the streamer object.
