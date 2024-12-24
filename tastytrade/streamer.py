@@ -434,8 +434,19 @@ class DXLinkStreamer:
 
     async def close(self) -> None:
         """
-        Closes the websocket connection and cancels the heartbeat task.
+        Closes the websocket connection, unsubscribes from all channels,
+        and cancels pending tasks.
         """
+        # Unsubscribe from all active channels
+        for event_type in self._subscription_state.keys():
+            if self._subscription_state[event_type] == "CHANNEL_OPENED":
+                try:
+                    await self._websocket.send(json.dumps({
+                        "type": "CHANNEL_CANCEL",
+                        "channel": self._channels[event_type],
+                    }))
+                except Exception as e:
+                    logger.error(f"Error closing channel {event_type}: {e}")
         self._connect_task.cancel()
         self._heartbeat_task.cancel()
         tasks = [self._connect_task, self._heartbeat_task]
